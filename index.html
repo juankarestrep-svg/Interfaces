@@ -21,21 +21,35 @@
     <input type="password" id="authPassword" placeholder="********">
     <button class="btn-primario" id="btnAccionAuth">Ingresar</button>
     <button class="btn-secundario" id="btnCambiarModo">¿No tienes cuenta? Regístrate</button>
+    <button class="btn-secundario" id="btnOlvide">¿Olvidaste tu contraseña?</button>
     <div id="mensajeAuth" class="mensaje"></div>
+</section>
+
+<section id="pantallaRecuperar" class="panel oculto">
+    <h2>Recuperar contraseña</h2>
+    <label for="recUsuario">Usuario</label>
+    <input type="text" id="recUsuario" placeholder="Escribe tu usuario">
+    <label for="recPassword">Nueva contraseña</label>
+    <input type="password" id="recPassword" placeholder="********">
+    <label for="recPassword2">Confirmar nueva contraseña</label>
+    <input type="password" id="recPassword2" placeholder="********">
+    <button class="btn-primario" id="btnRecuperar">Cambiar contraseña</button>
+    <button class="btn-secundario" id="btnVolverAuth">Volver</button>
+    <div id="mensajeRec" class="mensaje"></div>
 </section>
 
 <section id="pantallaMenu" class="panel oculto">
     <p class="usuario-activo">Sesión iniciada como <b id="nombreUsuarioActivo"></b></p>
     <h2>Menú principal</h2>
     <ul class="lista-menu">
-    <li><button data-ir="pantallaMuro">1. Calcular muro de ladrillo</button></li>
-    <li><button data-ir="pantallaViga">2. Calcular viga de hormigón</button></li>
-    <li><button data-ir="pantallaColumna">3. Calcular columnas de hormigón</button></li>
-    <li><button data-ir="pantallaContrapiso">4. Calcular contrapisos</button></li>
-    <li><button data-ir="pantallaTecho">5. Calcular techo</button></li>
-    <li><button data-ir="pantallaPiso">6. Calcular pisos</button></li>
-    <li><button data-ir="pantallaPintura">7. Calcular pintura</button></li>
-    <li><button id="btnSalir">8. Salir</button></li>
+        <li><button data-ir="pantallaMuro">1. Calcular muro de ladrillo</button></li>
+        <li><button data-ir="pantallaViga">2. Calcular viga de hormigón</button></li>
+        <li><button data-ir="pantallaColumna">3. Calcular columnas de hormigón</button></li>
+        <li><button data-ir="pantallaContrapiso">4. Calcular contrapisos</button></li>
+        <li><button data-ir="pantallaTecho">5. Calcular techo</button></li>
+        <li><button data-ir="pantallaPiso">6. Calcular pisos</button></li>
+        <li><button data-ir="pantallaPintura">7. Calcular pintura</button></li>
+        <li><button id="btnSalir">8. Salir</button></li>
     </ul>
 </section>
 
@@ -99,7 +113,7 @@
 </section>
 
 <section id="pantallaTecho" class="panel oculto">
-    <h2>5. Techo</h>
+    <h2>5. Techo</h2>
     <label for="techoEspesor">Espesor (m)</label>
     <input type="number" id="techoEspesor" min="0" step="0.01">
     <div class="fila-doble">
@@ -390,8 +404,54 @@ function mostrarMensajeAuth(texto, tipo) {
     ]);
 }
 
+document.getElementById("btnOlvide").addEventListener("click", function () {
+    document.getElementById("recUsuario").value = "";
+    document.getElementById("recPassword").value = "";
+    document.getElementById("recPassword2").value = "";
+    document.getElementById("mensajeRec").className = "mensaje";
+    document.getElementById("mensajeRec").textContent = "";
+    mostrarPantalla("pantallaRecuperar");
+});
+
+document.getElementById("btnVolverAuth").addEventListener("click", function () {
+    mostrarPantalla("pantallaAuth");
+});
+
+document.getElementById("btnRecuperar").addEventListener("click", function () {
+    const usuario = document.getElementById("recUsuario").value.trim();
+    const nueva = document.getElementById("recPassword").value.trim();
+    const confirmar = document.getElementById("recPassword2").value.trim();
+    const caja = document.getElementById("mensajeRec");
+
+    if (usuario === "" || nueva === "" || confirmar === "") {
+        caja.textContent = "Debes completar todos los campos.";
+        caja.className = "mensaje error";
+        return;
+    }
+
+    const encontrado = usuarios.find(function (u) { return u.usuario === usuario; });
+    if (!encontrado) {
+        caja.textContent = "Ese usuario no existe.";
+        caja.className = "mensaje error";
+        return;
+    }
+
+    if (nueva !== confirmar) {
+        caja.textContent = "Las contraseñas no coinciden.";
+        caja.className = "mensaje error";
+        return;
+    }
+
+    encontrado.password = nueva;
+
+    if (modoRegistro) {
+        document.getElementById("btnCambiarModo").click();
+    }
+    document.getElementById("authUsuario").value = usuario;
+    document.getElementById("authPassword").value = "";
+    mostrarPantalla("pantallaAuth");
+    mostrarMensajeAuth("Contraseña actualizada. Ahora inicia sesión.", "ok");
+});
 
 </script>
 </body>
-
-
